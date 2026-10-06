@@ -71,7 +71,7 @@ export const verifyOtp: RequestHandler = async (req, res) => {
   res
     .cookie("session", sessionId, {
       httpOnly: true,
-      secure: true,
+      // secure: true,
       sameSite: "none",
       path: "/",
       maxAge: next7Days,
