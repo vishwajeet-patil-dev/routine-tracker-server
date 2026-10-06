@@ -68,27 +68,25 @@ export const verifyOtp: RequestHandler = async (req, res) => {
     userId: user._id,
     expiresAt: next7Days,
   });
-  res
-    .cookie("session", sessionId, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      path: "/",
-      maxAge: next7Days,
-    })
-    .status(200)
-    .json({
-      message: "OTP verified successfully",
-    });
+  res.status(200).json({
+    message: "OTP verified successfully",
+    data: {
+      accessToken: sessionId,
+    },
+  });
 };
 
 export const requireAuth: RequestHandler = async (req, _res, next) => {
-  const { session } = req.cookies;
-  if (!session) {
+  const authHeader = req.headers.authorization;
+
+  const token = authHeader?.startsWith("Bearer ")
+    ? authHeader.substring(7)
+    : null;
+  if (!token) {
     throw new AppError(401, "Unauthorized");
   }
 
-  const sessionDoc = await Session.findOne({ sessionId: session });
+  const sessionDoc = await Session.findOne({ sessionId: token });
   if (!sessionDoc || sessionDoc.expiresAt < new Date()) {
     throw new AppError(401, "Unauthorized");
   }
