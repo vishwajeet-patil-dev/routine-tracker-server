@@ -8,7 +8,28 @@ import { config } from "./config.js";
 import { AppError } from "./errors.js";
 import { logger } from "./logger.js";
 import { router } from "./routes/index.js";
+import cors from "cors";
+
 export const app = express();
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://routine-tracker-client.onrender.com",
+];
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error(`CORS blocked origin: ${origin}`));
+    },
+    credentials: true,
+  }),
+);
 
 app.use(pinoHttp({ logger }));
 app.use(express.json());
