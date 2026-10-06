@@ -69,7 +69,13 @@ export const verifyOtp: RequestHandler = async (req, res) => {
     expiresAt: next7Days,
   });
   res
-    .cookie("session", sessionId, { httpOnly: true, maxAge: next7Days })
+    .cookie("session", sessionId, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      path: "/",
+      maxAge: next7Days,
+    })
     .status(200)
     .json({
       message: "OTP verified successfully",
